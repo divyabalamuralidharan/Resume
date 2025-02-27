@@ -9,7 +9,7 @@ export const GET = async (req : any) => {
         // Access the native MongoDB driver's `db` object
         const db = mongooseConnection.connection.db;
         // Get all the data from the collection
-        const data = await db.collection("emp").find().sort({"_id": -1}).toArray();
+        const data = await db.collection("data").find().sort({"_id": -1}).toArray();
         return NextResponse.json(data);
     }catch(e){
         console.error(e);
@@ -25,7 +25,7 @@ export const POST = async (req: Request) => {
         const body = await req.json();
 
         // Insert data into the collection
-        const result = await db.collection("emp").insertOne(body);
+        const result = await db.collection("data").insertOne(body);
 
         return NextResponse.json({ message: "Data inserted successfully", insertedId: result.insertedId });
     } catch (e) {

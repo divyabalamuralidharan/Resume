@@ -9,15 +9,17 @@ type StateValues = {
 
 const ResumeDetails = () => {
   const router = useRouter();
-  const [details, setDetails] = useState<Record<string, string>>(() => {
-    if (typeof window !== "undefined") {
-      const storedData = localStorage.getItem("resumeData");
-      return storedData ? JSON.parse(storedData) : {};
-    }
-    return {};
-  });
+  const [details, setDetails] = useState({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    // Fetching data from local storage when component mounts
+    const storedData = localStorage.getItem("resumeData");
+    if (storedData) {
+      setDetails(JSON.parse(storedData));
+    }
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setDetails((prev) => ({
       ...prev,
@@ -25,28 +27,11 @@ const ResumeDetails = () => {
     }));
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/server");
-        const result = await res.json();
-        setDetails(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    })();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/server", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(details),
-      });
-      const data = await res.json();
-      console.log("Response from server:", data);
+      // Store in localStorage for persistence
+      localStorage.setItem("resumeData", JSON.stringify(details));
       router.push("/TableDisplay");
     } catch (error) {
       console.error("Error submitting data:", error);
